@@ -1,13 +1,15 @@
 # Surfstore
 
-This is the starter code for the SurfStore project
+SurfStore is a networked file storage application that is based on Dropbox, and lets you sync files to and from the “cloud”. The cloud service, and a client which interacts with your service via gRPC has been implemented.
+Multiple clients can concurrently connect to the SurfStore service to access a common, shared set of files. Clients accessing SurfStore “see” a consistent set of updates to files, but SurfStore does not offer any guarantees about operations across files, meaning that it does not support multi-file transactions (such as atomic move).
 
-Before you get started, make sure you understand the following 2 things about Go. (These will also be covered in class and in discussions)
-1. Interfaces: They are named collections of method signatures. Here are some good resources to understand interfaces in Go:
-    a. https://gobyexample.com/interfaces
-    b. https://jordanorelli.com/post/32665860244/how-to-use-interfaces-in-go
+The SurfStore service is composed of the following two services:
 
-2. gRPC: You should know how to write gRPC servers and clients in Go. The [gRPC official documentation](https://grpc.io/docs/languages/go/basics/) of the *grpc* is a good resource.
+### BlockStore
+The content of each file in SurfStore is divided up into chunks, or blocks, each of which has a unique identifier. This service stores these blocks, and when given an identifier, retrieves and returns the appropriate block.
+
+### MetaStore
+The MetaStore service manages the metadata of files and the entire system. Most importantly, the MetaStore service holds the mapping of filenames to blocks. Furthermore, it should be aware of available BlockStores and map blocks to particular BlockStores.  In a real deployment, a cloud file service like Dropbox or Google Drive will hold exabytes of data, and so will require 10s of thousands of BlockStores or more to hold all that data.
 
 ## Protocol buffers
 
